@@ -1,0 +1,48 @@
+---
+- hosts: bionic
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Make sure that we can connect to the vm 
+      ping:
+    - name: Update an upgrade apt packages
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 8600 # One Day  
+    - name: Install docker and some dependencies
+      apt:
+        name: python3-pip, docker.io, docker-compose
+        state: present
+    - name: Start docker service
+      service:
+          name:  docker  
+          state: started    
+    - name: Install docker python module
+      pip:
+        name: 
+          - docker
+          - docker-compose
+    - name: Create a docker volume
+      docker_volume:
+        name: portainer_data
+    - name: Install  portainer 
+      docker_container:
+        name: portainer
+        image: portainer/portainer-ce:2.11.1
+        state: started
+        restart_policy: always
+        ports:
+          - "8000:8000"
+          - "9443:9443"
+        volumes: 
+          - /var/run/docker.sock:/var/run/docker.sock
+          - portainer_data:/data_portainer/
+    - name: copy Docker compose yml 
+      copy: 
+        src: ../authelia
+        dest: /tmp/
+    - name: Install Authelia 
+      docker_compose:
+        project_src: /tmp/authelia  
+        state: present

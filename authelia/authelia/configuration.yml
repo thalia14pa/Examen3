@@ -1,0 +1,11 @@
+smtp:                                                                         
+
+       username: 1125fa2a234dr                                                    
+
+       # This secret can also be set using the env variables AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE
+       # From mailtrap.io                                                          
+
+       password: 774c90831ssef
+       host: smtp.mailtrap.io                                                      
+       port: 2525                                                                  
+       sender: thalia.tpa@gmail.com 
